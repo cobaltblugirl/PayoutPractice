@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Payout Practice</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0d0d14;color:#e8e6f0;font-family:'Space Grotesk',sans-serif;}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+.app{min-height:100vh;padding:2rem 1rem 4rem;max-width:680px;margin:0 auto;}
+h1{font-family:'Space Mono',monospace;font-size:clamp(1.4rem,5vw,2rem);color:#c9f0d1;letter-spacing:-0.03em;margin-bottom:0.2rem;}
+.tagline{color:#5a5a7a;font-size:0.82rem;margin-bottom:2rem;}
+.card{background:#16161f;border:1px solid #2a2a3a;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1rem;}
+.card-title{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.13em;color:#5a5a7a;margin-bottom:0.9rem;}
+.btn{border:none;border-radius:8px;padding:0.45rem 1rem;font-family:'Space Grotesk',sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer;transition:opacity 0.12s,transform 0.1s;white-space:nowrap;}
+.btn:active{transform:scale(0.96);}
+.btn-green{background:#c9f0d1;color:#0a1a0d;}
+.btn-green:hover{opacity:0.88;}
+.btn-ghost{background:#1e1e2e;color:#8a8aaa;border:1px solid #2a2a3a;}
+.btn-ghost:hover{color:#e8e6f0;border-color:#4a4a6a;}
+.btn-danger{background:#2a1018;color:#f08090;border:1px solid #4a2030;}
+.btn-danger:hover{background:#3a1520;}
+.btn-sm{padding:0.3rem 0.65rem;font-size:0.76rem;}
+.btn-icon{padding:0.3rem 0.5rem;font-size:0.9rem;line-height:1;}
+.btn-start-quiz{width:100%;padding:0.9rem;font-size:1rem;font-weight:700;background:#c9f0d1;color:#0a1a0d;border-radius:12px;border:none;cursor:pointer;transition:opacity 0.15s;}
+.btn-start-quiz:disabled{opacity:0.35;cursor:not-allowed;}
+.btn-start-quiz:not(:disabled):hover{opacity:0.88;}
+.set-pill{display:inline-flex;align-items:center;justify-content:center;width:28px;height:22px;border-radius:5px;font-size:0.72rem;font-weight:700;font-family:'Space Mono',monospace;border:1.5px solid #2a2a3a;background:#1a1a26;color:#3a3a5a;cursor:pointer;transition:all 0.12s;user-select:none;}
+.set-pill:hover{border-color:#5a5a7a;color:#7a7a9a;}
+.set-pill.pill-a.on{background:#1e3a2a;border-color:#3a7a4a;color:#8af0b0;}
+.set-pill.pill-b.on{background:#1a2a3a;border-color:#2a5a8a;color:#80c0f0;}
+.pill-row{display:flex;gap:4px;}
+.cat-tabs{display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.25rem;}
+.cat-tab{padding:0.4rem 0.9rem;border-radius:20px;font-size:0.82rem;font-weight:600;border:1.5px solid #2a2a3a;background:#16161f;color:#7a7a9a;cursor:pointer;transition:all 0.12s;}
+.cat-tab:hover{border-color:#4a4a6a;color:#c9c9e9;}
+.cat-tab.active{background:#1e2a1e;border-color:#3a6a4a;color:#8af0b0;}
+.cat-tab.in-a{border-color:#2a5a3a;}
+.cat-tab.in-b{border-color:#2a3a5a;}
+.cat-header{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;}
+.cat-name-input{flex:1;background:#0d0d14;border:1.5px solid #2a2a3a;border-radius:8px;padding:0.45rem 0.75rem;color:#e8e6f0;font-family:'Space Grotesk',sans-serif;font-size:0.95rem;font-weight:600;outline:none;}
+.cat-name-input:focus{border-color:#6af09a;}
+.cat-set-label{font-size:0.68rem;color:#5a5a7a;text-transform:uppercase;letter-spacing:0.1em;margin-right:2px;}
+.items-table{width:100%;border-collapse:collapse;}
+.items-table th{font-size:0.65rem;text-transform:uppercase;letter-spacing:0.1em;color:#5a5a7a;text-align:left;padding:0 0.5rem 0.6rem;}
+.items-table th.right{text-align:right;}
+.items-table td{padding:0.25rem 0.4rem 0.25rem 0;vertical-align:middle;}
+.items-table tr+tr td{border-top:1px solid #1a1a28;padding-top:0.4rem;}
+.item-val-input{width:70px;background:#0d0d14;border:1px solid #2a2a3a;border-radius:6px;padding:0.3rem 0.5rem;color:#c9f0d1;font-family:'Space Mono',monospace;font-size:0.9rem;outline:none;text-align:center;}
+.item-val-input:focus{border-color:#4af09a;}
+.item-label-input{width:100%;background:#0d0d14;border:1px solid #2a2a3a;border-radius:6px;padding:0.3rem 0.6rem;color:#e8e6f0;font-family:'Space Grotesk',sans-serif;font-size:0.84rem;outline:none;}
+.item-label-input:focus{border-color:#9a9af0;}
+.weight-dots{display:flex;gap:3px;align-items:center;justify-content:flex-end;}
+.wdot{width:10px;height:10px;border-radius:50%;border:1.5px solid #3a3a5a;cursor:pointer;transition:background 0.1s,border-color 0.1s;}
+.wdot.filled{background:#c9f0d1;border-color:#6af09a;}
+.add-item-row{display:flex;gap:0.5rem;margin-top:0.9rem;align-items:center;}
+.add-item-row .item-val-input{width:80px;}
+.add-item-row .item-label-input{flex:1;}
+.drill-setup{display:flex;gap:0.75rem;align-items:flex-start;}
+.drill-col{flex:1;min-width:0;}
+.drill-col-title{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.5rem;font-weight:700;}
+.drill-col-title.title-a{color:#4af09a;}
+.drill-col-title.title-b{color:#60b0f0;}
+.drill-cat-btn{width:100%;text-align:left;padding:0.5rem 0.75rem;margin-bottom:0.4rem;border-radius:8px;background:#1e1e2e;border:1.5px solid #2a2a3a;color:#9a9ab8;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:0.84rem;transition:all 0.12s;}
+.drill-cat-btn:hover{border-color:#4a4a6a;color:#e8e6f0;}
+.drill-cat-btn.sel-a{background:#1e3a2a;border-color:#3a7a4a;color:#8af0b0;}
+.drill-cat-btn.sel-b{background:#1a2a3a;border-color:#2a5a8a;color:#80c0f0;}
+.vs-divider{align-self:center;color:#3a3a5a;font-family:'Space Mono',monospace;font-size:1.2rem;padding-top:1.6rem;flex-shrink:0;}
+.drill-hint{font-size:0.75rem;color:#3a3a5a;margin-top:0.25rem;}
+.progress-bar{height:3px;background:#1e1e2e;border-radius:2px;margin-bottom:2rem;overflow:hidden;}
+.progress-fill{height:100%;background:#c9f0d1;border-radius:2px;transition:width 0.3s ease;}
+.quiz-meta{display:flex;justify-content:space-between;color:#5a5a7a;font-size:0.78rem;margin-bottom:0.75rem;}
+.question-display{text-align:center;margin:1.5rem 0 0.5rem;}
+.answer-input{display:block;width:100%;text-align:center;background:#1e1e2e;border:2px solid #3a3a5a;border-radius:12px;padding:0.9rem;font-family:'Space Mono',monospace;font-size:2rem;color:#e8e6f0;outline:none;margin:1rem 0;transition:border-color 0.15s;}
+.answer-input:focus{border-color:#c9f0d1;}
+.answer-input.correct{border-color:#6af09a;background:#0d1a12;}
+.answer-input.wrong{border-color:#ff6b8a;background:#1a0d12;}
+.feedback{text-align:center;font-size:1rem;font-weight:600;min-height:1.6rem;}
+.feedback.correct{color:#6af09a;}
+.feedback.wrong{color:#ff6b8a;}
+.btn-check{width:100%;padding:0.8rem;font-size:1rem;margin-top:0.75rem;}
+.results-score{font-family:'Space Mono',monospace;font-size:3.5rem;color:#c9f0d1;text-align:center;margin:1.5rem 0 0.25rem;}
+.results-label{text-align:center;color:#7a7a9a;margin-bottom:1.5rem;font-size:0.9rem;}
+.missed-list{display:flex;flex-direction:column;gap:0.4rem;}
+.missed-item{display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0.9rem;background:#1e1e2e;border-radius:8px;font-size:0.85rem;gap:0.5rem;}
+.missed-expr{color:#9a9ab8;flex:1;}
+.missed-labels{color:#5a5a7a;font-size:0.75rem;flex:1;}
+.missed-yours{color:#ff6b8a;font-family:'Space Mono',monospace;}
+.missed-correct{color:#6af09a;font-family:'Space Mono',monospace;}
+.results-actions{display:flex;gap:0.75rem;margin-top:1.5rem;}
+.results-actions .btn{flex:1;padding:0.7rem;}
+.share-row{display:flex;gap:0.5rem;margin-top:0.75rem;}
+.share-url{flex:1;background:#0d0d14;border:1px solid #2a2a3a;border-radius:8px;padding:0.45rem 0.7rem;color:#5a5a7a;font-size:0.72rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.copied-flash{color:#6af09a;}
+.nav-tabs{display:flex;gap:0.5rem;margin-bottom:1.5rem;border-bottom:1px solid #1e1e2e;padding-bottom:0.75rem;}
+.nav-tab{font-size:0.84rem;font-weight:600;color:#5a5a7a;background:none;border:none;cursor:pointer;padding:0.3rem 0.1rem;border-bottom:2px solid transparent;margin-bottom:-13px;transition:color 0.12s,border-color 0.12s;}
+.nav-tab.active{color:#c9f0d1;border-bottom-color:#6af09a;}
+.nav-tab:hover{color:#9a9ab8;}
+.mode-toggle{display:flex;gap:0;margin-bottom:1.25rem;border-radius:10px;overflow:hidden;border:1.5px solid #2a2a3a;width:fit-content;}
+.mode-btn{padding:0.45rem 1.1rem;font-family:'Space Grotesk',sans-serif;font-size:0.84rem;font-weight:600;border:none;background:#16161f;color:#5a5a7a;cursor:pointer;transition:all 0.12s;}
+.mode-btn+.mode-btn{border-left:1.5px solid #2a2a3a;}
+.mode-btn.active-drill{background:#1e3a2a;color:#8af0b0;}
+.mode-btn.active-timed{background:#2a1a1a;color:#f0a060;}
+.timer-bar-wrap{height:4px;background:#1e1e2e;border-radius:2px;margin-bottom:1.5rem;overflow:hidden;}
+.timer-bar-fill{height:100%;border-radius:2px;transition:width 0.5s linear,background 0.5s;}
+.timer-display{font-family:'Space Mono',monospace;font-size:2.2rem;text-align:center;margin-bottom:0.25rem;letter-spacing:0.05em;}
+.timer-display.urgent{color:#f06060;}
+.timer-display.ok{color:#f0a060;}
+.timed-stat-row{display:flex;gap:1rem;justify-content:center;margin-bottom:1.5rem;flex-wrap:wrap;}
+.timed-stat{text-align:center;}
+.timed-stat-val{font-family:'Space Mono',monospace;font-size:2rem;color:#c9f0d1;}
+.timed-stat-lbl{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:#5a5a7a;margin-top:0.15rem;}
+.missed-set-a{color:#6af0a0;font-size:0.72rem;}
+.missed-set-b{color:#60b0f0;font-size:0.72rem;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+function uid() { return Math.random().toString(36).slice(2, 8); }
+
+function compressCategories(categories) {
+  return categories.map(c => ({
+    n: c.name, a: c.inA ? 1 : 0, b: c.inB ? 1 : 0,
+    i: c.items.map(it => ({ v: it.value, l: it.label, w: it.weight }))
+  }));
+}
+function decompressCategories(data) {
+  return data.map(c => ({
+    id: uid(), name: c.n, inA: !!c.a, inB: !!c.b,
+    items: (c.i || []).map(it => ({ id: uid(), value: it.v, label: it.l, weight: it.w }))
+  }));
+}
+function encodeData(categories) {
+  try { return btoa(JSON.stringify(compressCategories(categories))); } catch { return ""; }
+}
+function decodeData(str) {
+  try {
+    const raw = JSON.parse(atob(str));
+    if (Array.isArray(raw) && raw[0] && "n" in raw[0]) return decompressCategories(raw);
+    return raw;
+  } catch { return null; }
+}
+function getShareURL(categories) {
+  const params = new URLSearchParams({ d: encodeData(categories) });
+  return `${window.location.href.split("?")[0]}?${params}`;
+}
+function loadFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const d = params.get("d");
+  return d ? decodeData(d) : null;
+}
+
+const MULTIPLES_OF_5 = Array.from({ length: 19 }, (_, i) => (i + 1) * 5);
+
+function mkItems(rows) {
+  return rows.map(([v, l, w]) => ({ id: uid(), value: v, label: l, weight: w }));
+}
+
+function defaultCategories() {
+  return [
+    {
+      id: uid(), name: "UTH", inA: true, inB: false,
+      items: mkItems([
+        [1, "UTH Blind: Straight", 2],
+        [1.5, "UTH Blind: Flush", 3],
+        [3, "UTH Blind: Full House", 3],
+        [10, "UTH Blind: Quads", 3],
+        [30, "UTH Blind: Straight Flush", 3],
+        [500, "UTH Blind: Royal Flush", 2],
+        [3, "UTH Trips: Trips", 4],
+        [4, "UTH Trips: Straight", 3],
+        [7, "UTH Trips: Flush", 5],
+        [8, "UTH Trips: Full House", 4],
+        [25, "UTH Trips: Quads", 3],
+        [50, "UTH Trips: Straight Flush", 3],
+        [100, "UTH Trips: Royal Flush", 1],
+        [3, "UTH Pairs: 2S - 10s", 3],
+        [5, "UTH Pairs: AJ AQ Unsuited", 3],
+        [10, "UTH Pairs: JJ, QQ, KK", 3],
+        [15, "UTH Pairs: AK Unsuited", 3],
+        [20, "UTH Pairs: AJ AQ Suited", 3],
+        [25, "UTH Pairs: AK Suited", 3],
+        [30, "UTH Pairs: Aces", 3],
+        [9, "UTH 2WBB: Trips", 3],
+        [20, "UTH 2WBB: Straight", 3],
+        [25, "UTH 2WBB: Flush", 3],
+        [40, "UTH 2WBB: Full House", 3],
+        [500, "UTH 2WBB: Quads", 3],
+        [10000, "UTH 2WBB: Straight Flush", 3],
+      ])
+    },
+    {
+      id: uid(), name: "Bets", inA: false, inB: true,
+      items: mkItems([
+        [5, "$5", 5],
+        [10, "$10", 5],
+        [15, "$15", 5],
+        [20, "$20", 4],
+        [25, "$25", 4],
+        [30, "$30", 4],
+        [35, "$35", 4],
+        [40, "$40", 3],
+        [45, "$45", 3],
+        [50, "$50", 3],
+        [55, "$55", 3],
+        [60, "$60", 3],
+        [65, "$65", 2],
+        [70, "$70", 2],
+        [75, "$75", 2],
+        [80, "$80", 2],
+        [85, "$85", 1],
+        [90, "$90", 1],
+        [95, "$95", 1],
+      ])
+    },
+    {
+      id: uid(), name: "3 Card Poker", inA: true, inB: false,
+      items: mkItems([
+        [0, "3CP Ante: Flush", 1],
+        [1, "3CP Ante: Straight", 3],
+        [4, "3CP Ante: Trips", 3],
+        [5, "3CP Ante: Straight Flush", 3],
+        [10, "3CP Ante: Mini Royal", 3],
+        [1, "3CP Pairs+: Pair", 3],
+        [3, "3CP Pairs+: Flush", 3],
+        [6, "3CP Pairs+: Straight", 3],
+        [30, "3CP Pairs+: Trips", 3],
+        [40, "3CP Pairs+: Straight Flush", 3],
+        [200, "3CP Pairs+: Mini Royal", 3],
+        [5, "3CP 6Card: Trips", 3],
+        [10, "3CP 6Card: Straight", 3],
+        [20, "3CP 6Card: Flush", 3],
+        [25, "3CP 6Card: Full House", 3],
+        [50, "3CP 6Card: Quads", 3],
+        [200, "3CP 6Card: Straight Flush", 3],
+        [1000, "3CP 6Card: Royal Flush", 3],
+        [5, "3CP 2WBB: Pair", 3],
+        [50, "3CP 2WBB: Flush", 3],
+        [100, "3CP 2WBB: Straight", 3],
+        [3000, "3CP 2WBB: Trips", 3],
+        [10000, "3CP 2WBB: Straight Flush", 3],
+      ])
+    },
+    {
+      id: uid(), name: "DJ Wild", inA: true, inB: false,
+      items: mkItems([
+        [1, "DJW Blind: Straight", 3],
+        [2, "DJW Blind: Flush", 3],
+        [3, "DJW Blind: Full House", 3],
+        [4, "DJW Blind: Quads", 3],
+        [9, "DJW Blind: Straight Flush", 3],
+        [10, "DJW Blind: Quints", 3],
+        [50, "DJW Blind: Royal Flush", 3],
+        [1000, "DJW Blind: Five Wilds", 3],
+        [1, "DJW Trips: Wild Trips", 3],
+        [3, "DJW Trips: Wild Straight", 3],
+        [4, "DJW Trips: Wild Flush", 3],
+        [5, "DJW Trips: Wild Full House", 3],
+        [6, "DJW Trips: Wild Quads", 3],
+        [25, "DJW Trips: Wild Straight Flush", 3],
+        [70, "DJW Trips: Quints", 3],
+        [90, "DJW Trips: Wild Royal Flush", 3],
+        [2000, "DJW Trips: Five Wilds", 3],
+        [6, "DJW Trips: Natural Trips", 3],
+        [20, "DJW Trips: Natural Straight", 3],
+        [25, "DJW Trips: Natural Flush", 3],
+        [30, "DJW Trips: Natural Full House", 3],
+        [60, "DJW Trips: Natural Quads", 3],
+        [200, "DJW Trips: Natural Straight Flush", 3],
+        [1000, "DJW Trips: Natural Royal Flush", 3],
+        [9, "DJW 2WBB: Trips", 3],
+        [100, "DJW 2WBB: Straight", 3],
+        [300, "DJW 2WBB: Flush", 3],
+        [400, "DJW 2WBB: Full House", 3],
+        [500, "DJW 2WBB: Quads", 3],
+        [5000, "DJW 2WBB: Straight Flush", 3],
+        [10000, "DJW 2WBB: Quints", 3],
+        [10000, "DJW 2WBB: Royal Flush", 3],
+      ])
+    },
+    {
+      id: uid(), name: "I ❤ Suits", inA: true, inB: false,
+      items: mkItems([
+        [1, "ILS Flush Rush: 4 Card", 3],
+        [10, "ILS Flush Rush: 5 Card", 3],
+        [100, "ILS Flush Rush: 6 Card", 3],
+        [300, "ILS Flush Rush: 7 Card", 3],
+        [7, "ILS Super Flush Rush: 3 Card", 3],
+        [60, "ILS Super Flush Rush: 4 Card", 3],
+        [100, "ILS Super Flush Rush: 5 Card", 3],
+        [1000, "ILS Super Flush Rush: 6 Card", 3],
+      ])
+    },
+    {
+      id: uid(), name: "Pai Gow", inA: true, inB: false,
+      items: mkItems([
+        [2, "FUPG FB: Straight", 3],
+        [3, "FUPG FB: Trips", 3],
+        [4, "FUPG FB: Flush", 3],
+        [5, "FUPG FB: Full House", 3],
+        [25, "FUPG FB: Quads", 3],
+        [50, "FUPG FB: Straight Flush", 3],
+        [150, "FUPG FB: Royal Flush", 3],
+        [400, "FUPG FB: Five Aces", 3],
+        [1000, "FUPG FB: 7 Card SF with Joker", 3],
+        [2000, "FUPG FB: Royal Flush Royal Match", 3],
+        [5000, "FUPG FB: 7 Card SF no Joker", 3],
+        [7, "FUPG Ace High: no Joker", 3],
+        [10, "FUPG Ace High: with Joker", 3],
+        [25, "FUPG Ace High: Player too", 3],
+        [2, "FUPG LL: Ace High", 3],
+        [4, "FUPG LL: King High", 3],
+        [10, "FUPG LL: Queen High", 3],
+        [20, "FUPG LL: Jack High", 3],
+        [50, "FUPG LL: 10 High", 3],
+        [150, "FUPG LL: 9 High", 3],
+      ])
+    },
+    {
+      id: uid(), name: "1 Card", inA: true, inB: false,
+      items: mkItems([
+        [0.5, "1CD: Surrender", 3],
+        [4, "1CD: Any Tie", 3],
+        [10, "1CD: Black Tie", 3],
+        [25, "1CD: Aces Tie", 3],
+        [50, "1CD: Double Tie", 3],
+        [150, "1CD: Triple Tie", 3],
+        [200, "1CD: Quad Tie", 3],
+      ])
+    },
+    {
+      id: uid(), name: "New Ratios", inA: true, inB: false,
+      items: mkItems([
+        [2, "FUPG LL: Ace High", 3],
+        [4, "FUPG LL: King High", 3],
+        [10, "FUPG LL: Queen High", 3],
+        [20, "FUPG LL: Jack High", 3],
+        [50, "FUPG LL: 10 High", 3],
+        [150, "FUPG LL: Nine High", 3],
+        [5, "3CP 2WBB: Pair", 3],
+        [50, "3CP 2WBB: Flush", 3],
+        [100, "3CP 2WBB: Straight", 3],
+        [3000, "3CP 2WBB: Trips", 3],
+        [10000, "3CP 2WBB: Straight Flush", 3],
+        [9, "UTH 2WBB: Trips", 3],
+        [20, "UTH 2WBB: Straight", 3],
+        [25, "UTH 2WBB: Flush", 3],
+        [40, "UTH 2WBB: Full House", 3],
+        [500, "UTH 2WBB: Quads", 3],
+        [10000, "UTH 2WBB: Straight Flush", 3],
+        [30, "UTH Blind: Straight Flush", 3],
+        [500, "UTH Blind: Royal Flush", 3],
+        [5, "3CP 6Card: Trips", 3],
+        [20, "3CP 6Card: Flush", 3],
+        [25, "3CP 6Card: Full House", 3],
+        [50, "3CP 6Card: Quads", 3],
+      ])
+    },
+    {
+      id: uid(), name: "Ratios", inA: false, inB: true,
+      items: mkItems([
+        [1, "Ratio", 3],
+      ])
+    },
+    {
+      id: uid(), name: "Mississippi Stud", inA: true, inB: false,
+      items: mkItems([
+        [1, "MS 3Card: Pair", 3],
+        [3, "MS 3CB: Flush", 3],
+        [6, "MS 3Card Straight", 3],
+        [30, "MS 3Card: Trips", 3],
+        [40, "MS 3Card: Straight Flush", 3],
+        [50, "MS 3Card: Mini Royal", 3],
+        [3, "MS Pocket: 2s - 10s", 3],
+        [5, "MS Pocket: AJ AQ Unsuited", 3],
+        [10, "MS Pocket: JJ, QQ, KK", 3],
+        [15, "MS Pocket: AK Unsuited", 3],
+        [20, "MS Pocket: AJ AQ Suited", 3],
+        [25, "MS Pocket: AK Suited", 3],
+        [30, "MS Pocket: Aces", 3],
+        [0, "MS Streets: Pair 6s - 10s", 3],
+        [1, "MS Streets: Pair Js or Higher", 3],
+        [2, "MS Streets: Two Pair", 3],
+        [3, "MS Streets: Trips", 3],
+        [4, "MS Streets: Straight", 3],
+        [6, "MS Streets: Flush", 3],
+        [10, "MS Streets: Full House", 3],
+        [40, "MS Streets: Quads", 3],
+        [100, "MS Streets: Straight Flush", 3],
+        [500, "MS Streets: Royal Flush", 3],
+      ])
+    },
+    {
+      id: uid(), name: "Ratio Numbers", inA: true, inB: false,
+      items: mkItems(
+        [2,3,4,5,6,7,8,9,10,15,20,25,30,40,50,60,70,90,100,150,200,300,400,500,1000,2000,5000,8000,10000]
+          .map(v => [v, String(v), 3])
+      )
+    }
+  ];
+}
+
+const MAX_ANSWER = 100000;
+function buildPool(catA, catB) {
+  const pool = [];
+  for (const a of catA.items)
+    for (const b of catB.items) {
+      if (a.value * b.value > MAX_ANSWER) continue;
+      const w = Math.round((a.weight + b.weight) / 2);
+      for (let i = 0; i < w; i++) pool.push({ a, b });
+    }
+  return shuffle(pool);
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function mergeSelected(categories, key) {
+  const selected = categories.filter(c => c[key]);
+  return mergeCats(selected);
+}
+
+function mergeCats(selected) {
+  const seen = new Set();
+  const items = [];
+  for (const cat of selected)
+    for (const it of cat.items)
+      if (!seen.has(it.id)) { seen.add(it.id); items.push(it); }
+  return { name: selected.map(c => c.name).join(" + ") || "None", items };
+}
+
+function WeightDots({ value, onChange }) {
+  return (
+    <div className="weight-dots">
+      {[1,2,3,4,5].map(n => (
+        <div key={n} className={`wdot ${n <= value ? "filled" : ""}`} onClick={() => onChange(n)} />
+      ))}
+    </div>
+  );
+}
+
+function SetPills({ inA, inB, onToggleA, onToggleB }) {
+  return (
+    <div className="pill-row">
+      <span className="cat-set-label">Set</span>
+      <div className={`set-pill pill-a ${inA ? "on" : ""}`} onClick={onToggleA} title="Include in Set A">A</div>
+      <div className={`set-pill pill-b ${inB ? "on" : ""}`} onClick={onToggleB} title="Include in Set B">B</div>
+    </div>
+  );
+}
+
+function CategoryEditor({ cat, onChange, onDelete }) {
+  const [newVal, setNewVal] = useState("");
+  const [newLabel, setNewLabel] = useState("");
+  const valRef = useRef();
+
+  const updateName = name => onChange({ ...cat, name });
+  const toggleInA = () => onChange({ ...cat, inA: !cat.inA });
+  const toggleInB = () => onChange({ ...cat, inB: !cat.inB });
+  const updateItem = (id, patch) =>
+    onChange({ ...cat, items: cat.items.map(it => it.id === id ? { ...it, ...patch } : it) });
+  const removeItem = id =>
+    onChange({ ...cat, items: cat.items.filter(it => it.id !== id) });
+  const addItem = () => {
+    const v = parseFloat(newVal);
+    if (isNaN(v)) return;
+    const label = newLabel.trim() || String(v);
+    onChange({ ...cat, items: [...cat.items, { id: uid(), value: v, label, weight: 3 }] });
+    setNewVal(""); setNewLabel("");
+    valRef.current?.focus();
+  };
+
+  return (
+    <div>
+      <div className="cat-header">
+        <input className="cat-name-input" value={cat.name} onChange={e => updateName(e.target.value)} placeholder="Category name" />
+        <SetPills inA={cat.inA} inB={cat.inB} onToggleA={toggleInA} onToggleB={toggleInB} />
+        <button className="btn btn-danger btn-sm" onClick={onDelete}>Delete</button>
+      </div>
+      <table className="items-table">
+        <thead>
+          <tr>
+            <th style={{width:76}}>Value</th>
+            <th>Label</th>
+            <th className="right" style={{width:80}}>Frequency</th>
+            <th style={{width:28}}></th>
+          </tr>
+        </thead>
+        <tbody>
+          {cat.items.map(it => (
+            <tr key={it.id}>
+              <td><input className="item-val-input" type="number" value={it.value} onChange={e => updateItem(it.id, { value: parseFloat(e.target.value) || 0 })} /></td>
+              <td><input className="item-label-input" value={it.label} onChange={e => updateItem(it.id, { label: e.target.value })} placeholder="Label…" /></td>
+              <td><WeightDots value={it.weight} onChange={w => updateItem(it.id, { weight: w })} /></td>
+              <td><button className="btn btn-icon btn-ghost" onClick={() => removeItem(it.id)} style={{color:"#f08090"}}>✕</button></td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="add-item-row">
+        <input ref={valRef} className="item-val-input" type="number" placeholder="Value" value={newVal}
+          onChange={e => setNewVal(e.target.value)} onKeyDown={e => e.key === "Enter" && addItem()} />
+        <input className="item-label-input" placeholder="Label (optional)" value={newLabel}
+          onChange={e => setNewLabel(e.target.value)} onKeyDown={e => e.key === "Enter" && addItem()} />
+        <button className="btn btn-ghost btn-sm" onClick={addItem}>Add</button>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [categories, setCategories] = useState(() => loadFromURL() || defaultCategories());
+  // Session-only: which Set-B categories are active for the drill right now.
+  // This never touches category.inB — it's purely a temporary include/exclude toggle.
+  const [activeB, setActiveB] = useState(() => new Set(categories.filter(c => c.inB).map(c => c.id)));
+  const seenBIdsRef = useRef(new Set(categories.filter(c => c.inB).map(c => c.id)));
+  const [mainTab, setMainTab] = useState("drill");
+  const [activeCatId, setActiveCatId] = useState(null);
+  const [mode, setMode] = useState("drill");
+  const [screen, setScreen] = useState("setup");
+  const [questions, setQuestions] = useState([]);
+  const [qIndex, setQIndex] = useState(0);
+  const [answer, setAnswer] = useState("");
+  const [feedback, setFeedback] = useState(null);
+  const [missed, setMissed] = useState([]);
+  const [score, setScore] = useState(0);
+  const [copied, setCopied] = useState(false);
+  const TIMED_QUESTIONS = 60;
+  const [timeElapsed, setTimeElapsed] = useState(0);
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (!activeCatId && categories.length > 0) setActiveCatId(categories[0].id);
+    if (activeCatId && !categories.find(c => c.id === activeCatId))
+      setActiveCatId(categories[0]?.id || null);
+    const idsInB = categories.filter(c => c.inB).map(c => c.id);
+    setActiveB(prev => {
+      const next = new Set();
+      for (const id of idsInB) {
+        if (prev.has(id) || !seenBIdsRef.current.has(id)) next.add(id); // keep active, or default new ones active
+      }
+      seenBIdsRef.current = new Set(idsInB);
+      return next;
+    });
+  }, [categories]);
+
+  const updateCat = updated => setCategories(cats => cats.map(c => c.id === updated.id ? updated : c));
+  const deleteCat = id => setCategories(cats => cats.filter(c => c.id !== id));
+  const addCategory = () => {
+    const newCat = { id: uid(), name: "New Category", inA: false, inB: false, items: [] };
+    setCategories(cats => [...cats, newCat]);
+    setActiveCatId(newCat.id);
+  };
+
+  const catA = mergeSelected(categories, "inA");
+  const catB = mergeCats(categories.filter(c => c.inB && activeB.has(c.id)));
+  const canDrill = catA.items.length > 0 && catB.items.length > 0;
+  const poolSize = canDrill
+    ? catA.items.reduce((s,a) => s + catB.items.reduce((t,b) =>
+        t + (a.value * b.value > MAX_ANSWER ? 0 : Math.round((a.weight+b.weight)/2)), 0), 0)
+    : 0;
+
+  const startQuiz = () => {
+    let pool = buildPool(catA, catB);
+    if (!pool.length) return;
+    if (mode === "timed") {
+      // Weighted shuffle first (biases order toward higher-weight pairs),
+      // then strip repeats so each A×B combo appears at most once.
+      const seen = new Set();
+      const unique = [];
+      for (const q of pool) {
+        const key = q.a.id + "|" + q.b.id;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        unique.push(q);
+      }
+      pool = unique.slice(0, TIMED_QUESTIONS);
+    }
+    setQuestions(pool); setQIndex(0); setAnswer(""); setFeedback(null); setMissed([]); setScore(0);
+    if (mode === "timed") { setTimeElapsed(0); }
+    setScreen(mode === "timed" ? "timed" : "quiz");
+  };
+
+  useEffect(() => {
+    if (screen === "timed") {
+      const start = Date.now();
+      timerRef.current = setInterval(() => {
+        setTimeElapsed(Math.floor((Date.now() - start) / 1000));
+      }, 500);
+    } else {
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [screen]);
+
+  const submitAnswer = useCallback(() => {
+    if (feedback) return;
+    const q = questions[qIndex];
+    const correct = Math.ceil(q.a.value * q.b.value);
+    const given = parseFloat(answer);
+    const isCorrect = given === correct;
+    if (isCorrect) setScore(s => s + 1);
+    else setMissed(m => [...m, { q, given, correct }]);
+    if (screen === "timed") {
+      const next = qIndex + 1;
+      if (next >= questions.length) { clearInterval(timerRef.current); setScreen("results"); }
+      else { setQIndex(next); setAnswer(""); }
+    } else {
+      setFeedback(isCorrect ? "correct" : "wrong");
+      setTimeout(() => {
+        if (qIndex + 1 >= questions.length) setScreen("results");
+        else { setQIndex(i => i + 1); setAnswer(""); setFeedback(null); }
+      }, 900);
+    }
+  }, [feedback, questions, qIndex, answer, screen]);
+
+  useEffect(() => {
+    const handler = e => {
+      if (e.key === "Enter" && (screen === "quiz" || screen === "timed") && answer !== "" && !feedback) submitAnswer();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [screen, answer, feedback, submitAnswer]);
+
+  const copyShare = () => {
+    const url = getShareURL(categories);
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true); setTimeout(() => setCopied(false), 2200);
+    }).catch(() => {});
+  };
+
+  const pct = questions.length ? Math.round((score / questions.length) * 100) : 0;
+
+  // ── Drill quiz ──
+  if (screen === "quiz" && questions.length > 0) {
+    const q = questions[qIndex];
+    return (
+      <div className="app">
+        <div className="quiz-meta">
+          <span>{qIndex + 1} / {questions.length}</span>
+          <span>{score} correct</span>
+          <button className="btn btn-ghost btn-sm" onClick={() => setScreen("setup")}>✕ Quit</button>
+        </div>
+        <div className="progress-bar"><div className="progress-fill" style={{width:`${(qIndex/questions.length)*100}%`}}/></div>
+        <div className="question-display">
+          <div style={{fontSize:"clamp(1rem,4.5vw,1.8rem)",lineHeight:1.35,wordBreak:"break-word",padding:"0 0.5rem",textAlign:"center",fontFamily:"'Space Mono',monospace",color:"#e8e6f0"}}>
+            {q.a.label} × {q.b.label}
+          </div>
+        </div>
+        <input className={`answer-input ${feedback||""}`} type="number" placeholder="?" value={answer}
+          onChange={e => setAnswer(e.target.value)} autoFocus readOnly={!!feedback} />
+        <div className={`feedback ${feedback||""}`}>
+          {feedback === "correct" && "✓ Correct!"}
+          {feedback === "wrong" && `✗ Answer: ${Math.ceil(questions[qIndex].a.value * questions[qIndex].b.value)}`}
+        </div>
+        {!feedback && answer !== "" && <button className="btn btn-green btn-check" onClick={submitAnswer}>Check</button>}
+      </div>
+    );
+  }
+
+  // ── Timed quiz ──
+  if (screen === "timed" && questions.length > 0) {
+    const q = questions[qIndex];
+    const mins = String(Math.floor(timeElapsed/60)).padStart(2,"0");
+    const secs = String(timeElapsed%60).padStart(2,"0");
+    return (
+      <div className="app">
+        <div className="quiz-meta">
+          <span>{qIndex+1} / {questions.length}</span>
+          <span>{score} correct</span>
+          <button className="btn btn-ghost btn-sm" onClick={() => { clearInterval(timerRef.current); setScreen("setup"); }}>✕ Quit</button>
+        </div>
+        <div className="timer-display ok">{mins}:{secs}</div>
+        <div className="progress-bar" style={{marginBottom:"1rem"}}><div className="progress-fill" style={{width:`${(qIndex/questions.length)*100}%`}}/></div>
+        <div className="question-display">
+          <div style={{fontSize:"clamp(1rem,4.5vw,1.8rem)",lineHeight:1.35,wordBreak:"break-word",padding:"0 0.5rem",textAlign:"center",fontFamily:"'Space Mono',monospace",color:"#e8e6f0"}}>
+            {q.a.label} × {q.b.label}
+          </div>
+        </div>
+        <input className="answer-input" type="number" placeholder="?" value={answer}
+          onChange={e => setAnswer(e.target.value)} autoFocus />
+        {answer !== "" && <button className="btn btn-green btn-check" onClick={submitAnswer}>Next</button>}
+      </div>
+    );
+  }
+
+  // ── Results ──
+  if (screen === "results") {
+    const isTimed = mode === "timed";
+    const mins = String(Math.floor(timeElapsed/60)).padStart(2,"0");
+    const secs = String(timeElapsed%60).padStart(2,"0");
+    return (
+      <div className="app">
+        <h1>Payout Practice</h1>
+        <div className="card">
+          {isTimed ? (
+            <div className="timed-stat-row">
+              <div className="timed-stat"><div className="timed-stat-val">{questions.length ? Math.round((score/questions.length)*100) : 0}%</div><div className="timed-stat-lbl">Correct</div></div>
+              <div className="timed-stat"><div className="timed-stat-val" style={{color:"#f0a060"}}>{mins}:{secs}</div><div className="timed-stat-lbl">Time</div></div>
+              <div className="timed-stat"><div className="timed-stat-val" style={{color:missed.length===0?"#6af09a":"#f08090"}}>{missed.length}</div><div className="timed-stat-lbl">Missed</div></div>
+            </div>
+          ) : (
+            <>
+              <div className="results-score">{pct}%</div>
+              <div className="results-label">{score} / {questions.length} correct</div>
+            </>
+          )}
+          {missed.length > 0 && (
+            <>
+              <div className="card-title">Missed</div>
+              <div className="missed-list">
+                {missed.map(({ q, given, correct }, i) => (
+                  <div key={i} className="missed-item">
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:"0.88rem",color:"#c9c9e9",marginBottom:"0.15rem"}}>{q.a.label} × {q.b.label}</div>
+                      <div style={{display:"flex",gap:"0.5rem"}}>
+                        <span className="missed-set-a">A: {q.a.value}</span>
+                        <span style={{color:"#2a2a3a"}}>·</span>
+                        <span className="missed-set-b">B: {q.b.value}</span>
+                      </div>
+                    </div>
+                    <span style={{flexShrink:0}}>
+                      <span className="missed-yours">{isNaN(given)?"—":given} </span>
+                      <span style={{color:"#3a3a5a"}}>→ </span>
+                      <span className="missed-correct">{Math.ceil(correct)}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+          <div className="results-actions">
+            <button className="btn btn-ghost" onClick={() => setScreen("setup")}>Back</button>
+            <button className="btn btn-green" onClick={startQuiz}>Retry</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Setup ──
+  const activeCat = categories.find(c => c.id === activeCatId);
+  return (
+    <div className="app">
+      <h1>Payout Practice</h1>
+      <div className="nav-tabs">
+        <button className={`nav-tab ${mainTab==="drill"?"active":""}`} onClick={() => setMainTab("drill")}>Drill</button>
+        <button className={`nav-tab ${mainTab==="edit"?"active":""}`} onClick={() => setMainTab("edit")}>Edit Categories</button>
+      </div>
+
+      {mainTab === "drill" && (
+        <>
+          <div className="mode-toggle">
+            <button className={`mode-btn ${mode==="drill"?"active-drill":""}`} onClick={() => setMode("drill")}>Drill</button>
+            <button className={`mode-btn ${mode==="timed"?"active-timed":""}`} onClick={() => setMode("timed")}>⏱ Timed Test</button>
+          </div>
+          <div className="card">
+            <div className="card-title">Choose what to multiply</div>
+            <div className="drill-setup">
+              <div className="drill-col">
+                <div className="drill-col-title title-a">Set A</div>
+                {(() => {
+                  const eligibleA = categories.filter(c => !c.inB);
+                  const allOn = eligibleA.length > 0 && eligibleA.every(c => c.inA);
+                  return (
+                    <>
+                      <button className={`drill-cat-btn all-btn ${allOn?"sel-a":""}`}
+                        onClick={() => setCategories(cats => cats.map(c => c.inB ? c : {...c,inA:!allOn}))}>
+                        All
+                        <span style={{color:allOn?"#3a5a3a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>
+                          ({eligibleA.reduce((s,c)=>s+c.items.length,0)})
+                        </span>
+                      </button>
+                      {eligibleA.map(c => (
+                        <button key={c.id} className={`drill-cat-btn ${c.inA?"sel-a":""}`}
+                          onClick={() => setCategories(cats => cats.map(x => x.id===c.id?{...x,inA:!x.inA}:x))}>
+                          {c.name}
+                          <span style={{color:c.inA?"#3a5a3a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>({c.items.length})</span>
+                        </button>
+                      ))}
+                      {eligibleA.length === 0 && <div style={{fontSize:"0.78rem",color:"#3a3a5a",padding:"0.4rem 0"}}>All categories are in Set B</div>}
+                    </>
+                  );
+                })()}
+                {categories.filter(c=>c.inA).length>1 && <div className="drill-hint">Merged into one pool</div>}
+              </div>
+              <div className="vs-divider">×</div>
+              <div className="drill-col">
+                <div className="drill-col-title title-b">Set B</div>
+                {categories.filter(c=>c.inB).length===0 && <div style={{fontSize:"0.78rem",color:"#3a3a5a",padding:"0.4rem 0"}}>No categories assigned — go to Edit Categories</div>}
+                {categories.filter(c=>c.inB).map(c => (
+                  <button key={c.id} className={`drill-cat-btn ${activeB.has(c.id)?"sel-b":""}`}
+                    onClick={() => setActiveB(prev => {
+                      const next = new Set(prev);
+                      if (next.has(c.id)) next.delete(c.id); else next.add(c.id);
+                      return next;
+                    })}>
+                    {c.name}
+                    <span style={{color:activeB.has(c.id)?"#2a3a5a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>({c.items.length})</span>
+                  </button>
+                ))}
+                {categories.filter(c=>activeB.has(c.id)).length>1 && <div className="drill-hint">Merged into one pool</div>}
+              </div>
+            </div>
+          </div>
+
+          {canDrill && (
+            <div className="card" style={{marginBottom:"1rem"}}>
+              <div className="card-title">Preview</div>
+              <p style={{fontSize:"0.82rem",color:"#7a7a9a"}}>
+                <strong style={{color:"#8af0b0"}}>{catA.name}</strong> ({catA.items.length} items) ×{" "}
+                <strong style={{color:"#80c0f0"}}>{catB.name}</strong> ({catB.items.length} items) — ~{poolSize} questions
+              </p>
+            </div>
+          )}
+
+          {mode === "timed" && (
+            <div style={{fontSize:"0.8rem",color:"#7a5a3a",background:"#1a1208",border:"1px solid #3a2a10",borderRadius:"8px",padding:"0.6rem 0.9rem",marginBottom:"0.75rem"}}>
+              ⏱ <strong style={{color:"#f0a060"}}>60 questions</strong> — answer as fast as you can. No feedback between questions. Results show time, score, and every missed question.
+            </div>
+          )}
+          <button className="btn-start-quiz" disabled={!canDrill} onClick={startQuiz}>
+            {mode === "timed" ? "Start Timed Test" : "Start Drill"}
+          </button>
+        </>
+      )}
+
+      {mainTab === "edit" && (
+        <>
+          <div className="cat-tabs">
+            {categories.map(c => (
+              <button key={c.id} className={`cat-tab ${activeCatId===c.id?"active":""} ${c.inA?"in-a":""} ${c.inB?"in-b":""}`}
+                onClick={() => setActiveCatId(c.id)}>
+                {c.name}
+                {(c.inA||c.inB) && <span style={{marginLeft:"0.4rem",fontSize:"0.68rem",color:"#5a7a5a"}}>{c.inA&&"A"}{c.inA&&c.inB&&"+"}{c.inB&&"B"}</span>}
+              </button>
+            ))}
+            <button className="btn btn-ghost btn-sm" onClick={addCategory}>+ New</button>
+          </div>
+          {activeCat ? (
+            <div className="card">
+              <CategoryEditor key={activeCat.id} cat={activeCat} onChange={updateCat} onDelete={() => deleteCat(activeCat.id)} />
+            </div>
+          ) : (
+            <div className="card" style={{textAlign:"center",color:"#5a5a7a",padding:"2.5rem"}}>
+              No categories yet.{" "}
+              <button className="btn btn-green btn-sm" style={{marginLeft:"0.5rem"}} onClick={addCategory}>Create one</button>
+            </div>
+          )}
+          <p style={{fontSize:"0.75rem",color:"#3a3a5a",marginTop:"0.75rem",textAlign:"center"}}>
+            Use the A / B toggles in each category header to assign it to a drill set.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
+try {
+  ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+} catch (err) {
+  document.getElementById("root").innerHTML =
+    '<div style="padding:2rem;color:#f08090;font-family:monospace;white-space:pre-wrap;">Render error: ' +
+    (err && err.message ? err.message : String(err)) + '</div>';
+}
+</script>
+</body>
+</html>
