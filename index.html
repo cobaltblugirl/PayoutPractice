@@ -161,6 +161,19 @@ function loadFromURL() {
 
 const MULTIPLES_OF_5 = Array.from({ length: 19 }, (_, i) => (i + 1) * 5);
 
+// Category data (names, items, labels, weights, A/B assignment) persists
+// in the browser until the user hits Reset to Defaults.
+const CATEGORIES_KEY = "payout_categories_v4";
+function loadCategoriesFromStorage() {
+  try { const s = localStorage.getItem(CATEGORIES_KEY); return s ? JSON.parse(s) : null; } catch { return null; }
+}
+function saveCategoriesToStorage(cats) {
+  try { localStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats)); } catch {}
+}
+function clearCategoriesStorage() {
+  try { localStorage.removeItem(CATEGORIES_KEY); } catch {}
+}
+
 function mkItems(rows) {
   return rows.map(([v, l, w]) => ({ id: uid(), value: v, label: l, weight: w }));
 }
@@ -171,198 +184,226 @@ function defaultCategories() {
       id: uid(), name: "UTH", inA: true, inB: false,
       items: mkItems([
         [1, "UTH Blind: Straight", 2],
-        [1.5, "UTH Blind: Flush", 3],
-        [3, "UTH Blind: Full House", 3],
-        [10, "UTH Blind: Quads", 3],
-        [30, "UTH Blind: Straight Flush", 3],
+        [1.5, "UTH Blind: Flush", 2],
+        [3, "UTH Blind: Full House", 2],
+        [10, "UTH Blind: Quads", 2],
+        [30, "UTH Blind: Straight Flush", 2],
         [500, "UTH Blind: Royal Flush", 2],
-        [3, "UTH Trips: Trips", 4],
-        [4, "UTH Trips: Straight", 3],
-        [7, "UTH Trips: Flush", 5],
-        [8, "UTH Trips: Full House", 4],
-        [25, "UTH Trips: Quads", 3],
-        [50, "UTH Trips: Straight Flush", 3],
-        [100, "UTH Trips: Royal Flush", 1],
-        [3, "UTH Pairs: 2S - 10s", 3],
-        [5, "UTH Pairs: AJ AQ Unsuited", 3],
-        [10, "UTH Pairs: JJ, QQ, KK", 3],
-        [15, "UTH Pairs: AK Unsuited", 3],
-        [20, "UTH Pairs: AJ AQ Suited", 3],
-        [25, "UTH Pairs: AK Suited", 3],
-        [30, "UTH Pairs: Aces", 3],
-        [9, "UTH 2WBB: Trips", 3],
-        [20, "UTH 2WBB: Straight", 3],
-        [25, "UTH 2WBB: Flush", 3],
-        [40, "UTH 2WBB: Full House", 3],
-        [500, "UTH 2WBB: Quads", 3],
-        [10000, "UTH 2WBB: Straight Flush", 3],
+        [3, "UTH Trips: Trips", 2],
+        [4, "UTH Trips: Straight", 2],
+        [7, "UTH Trips: Flush", 2],
+        [8, "UTH Trips: Full House", 2],
+        [25, "UTH Trips: Quads", 2],
+        [50, "UTH Trips: Straight Flush", 2],
+        [100, "UTH Trips: Royal Flush", 2],
+        [3, "UTH Pairs: 2S - 10s", 2],
+        [5, "UTH Pairs: AJ AQ Unsuited", 2],
+        [10, "UTH Pairs: JJ, QQ, KK", 2],
+        [15, "UTH Pairs: AK Unsuited", 2],
+        [20, "UTH Pairs: AJ AQ Suited", 2],
+        [25, "UTH Pairs: AK Suited", 2],
+        [30, "UTH Pairs: Aces", 2],
+        [9, "UTH 2WBB: Trips", 2],
+        [20, "UTH 2WBB: Straight", 2],
+        [25, "UTH 2WBB: Flush", 2],
+        [40, "UTH 2WBB: Full House", 2],
+        [500, "UTH 2WBB: Quads", 2],
+        [10000, "UTH 2WBB: Straight Flush", 2],
       ])
     },
     {
       id: uid(), name: "Bets", inA: false, inB: true,
       items: mkItems([
-        [5, "$5", 5],
-        [10, "$10", 5],
-        [15, "$15", 5],
-        [20, "$20", 4],
-        [25, "$25", 4],
-        [30, "$30", 4],
-        [35, "$35", 4],
-        [40, "$40", 3],
-        [45, "$45", 3],
-        [50, "$50", 3],
-        [55, "$55", 3],
-        [60, "$60", 3],
+        [5, "$5", 2],
+        [10, "$10", 2],
+        [15, "$15", 2],
+        [20, "$20", 2],
+        [25, "$25", 2],
+        [30, "$30", 2],
+        [35, "$35", 2],
+        [40, "$40", 2],
+        [45, "$45", 2],
+        [50, "$50", 2],
+        [55, "$55", 2],
+        [60, "$60", 2],
         [65, "$65", 2],
         [70, "$70", 2],
         [75, "$75", 2],
         [80, "$80", 2],
-        [85, "$85", 1],
-        [90, "$90", 1],
-        [95, "$95", 1],
-      ])
-    },
-    {
-      id: uid(), name: "3 Card Poker", inA: true, inB: false,
-      items: mkItems([
-        [0, "3CP Ante: Flush", 1],
-        [1, "3CP Ante: Straight", 3],
-        [4, "3CP Ante: Trips", 3],
-        [5, "3CP Ante: Straight Flush", 3],
-        [10, "3CP Ante: Mini Royal", 3],
-        [1, "3CP Pairs+: Pair", 3],
-        [3, "3CP Pairs+: Flush", 3],
-        [6, "3CP Pairs+: Straight", 3],
-        [30, "3CP Pairs+: Trips", 3],
-        [40, "3CP Pairs+: Straight Flush", 3],
-        [200, "3CP Pairs+: Mini Royal", 3],
-        [5, "3CP 6Card: Trips", 3],
-        [10, "3CP 6Card: Straight", 3],
-        [20, "3CP 6Card: Flush", 3],
-        [25, "3CP 6Card: Full House", 3],
-        [50, "3CP 6Card: Quads", 3],
-        [200, "3CP 6Card: Straight Flush", 3],
-        [1000, "3CP 6Card: Royal Flush", 3],
-        [5, "3CP 2WBB: Pair", 3],
-        [50, "3CP 2WBB: Flush", 3],
-        [100, "3CP 2WBB: Straight", 3],
-        [3000, "3CP 2WBB: Trips", 3],
-        [10000, "3CP 2WBB: Straight Flush", 3],
-      ])
-    },
-    {
-      id: uid(), name: "DJ Wild", inA: true, inB: false,
-      items: mkItems([
-        [1, "DJW Blind: Straight", 3],
-        [2, "DJW Blind: Flush", 3],
-        [3, "DJW Blind: Full House", 3],
-        [4, "DJW Blind: Quads", 3],
-        [9, "DJW Blind: Straight Flush", 3],
-        [10, "DJW Blind: Quints", 3],
-        [50, "DJW Blind: Royal Flush", 3],
-        [1000, "DJW Blind: Five Wilds", 3],
-        [1, "DJW Trips: Wild Trips", 3],
-        [3, "DJW Trips: Wild Straight", 3],
-        [4, "DJW Trips: Wild Flush", 3],
-        [5, "DJW Trips: Wild Full House", 3],
-        [6, "DJW Trips: Wild Quads", 3],
-        [25, "DJW Trips: Wild Straight Flush", 3],
-        [70, "DJW Trips: Quints", 3],
-        [90, "DJW Trips: Wild Royal Flush", 3],
-        [2000, "DJW Trips: Five Wilds", 3],
-        [6, "DJW Trips: Natural Trips", 3],
-        [20, "DJW Trips: Natural Straight", 3],
-        [25, "DJW Trips: Natural Flush", 3],
-        [30, "DJW Trips: Natural Full House", 3],
-        [60, "DJW Trips: Natural Quads", 3],
-        [200, "DJW Trips: Natural Straight Flush", 3],
-        [1000, "DJW Trips: Natural Royal Flush", 3],
-        [9, "DJW 2WBB: Trips", 3],
-        [100, "DJW 2WBB: Straight", 3],
-        [300, "DJW 2WBB: Flush", 3],
-        [400, "DJW 2WBB: Full House", 3],
-        [500, "DJW 2WBB: Quads", 3],
-        [5000, "DJW 2WBB: Straight Flush", 3],
-        [10000, "DJW 2WBB: Quints", 3],
-        [10000, "DJW 2WBB: Royal Flush", 3],
-      ])
-    },
-    {
-      id: uid(), name: "I ❤ Suits", inA: true, inB: false,
-      items: mkItems([
-        [1, "ILS Flush Rush: 4 Card", 3],
-        [10, "ILS Flush Rush: 5 Card", 3],
-        [100, "ILS Flush Rush: 6 Card", 3],
-        [300, "ILS Flush Rush: 7 Card", 3],
-        [7, "ILS Super Flush Rush: 3 Card", 3],
-        [60, "ILS Super Flush Rush: 4 Card", 3],
-        [100, "ILS Super Flush Rush: 5 Card", 3],
-        [1000, "ILS Super Flush Rush: 6 Card", 3],
-      ])
-    },
-    {
-      id: uid(), name: "Pai Gow", inA: true, inB: false,
-      items: mkItems([
-        [2, "FUPG FB: Straight", 3],
-        [3, "FUPG FB: Trips", 3],
-        [4, "FUPG FB: Flush", 3],
-        [5, "FUPG FB: Full House", 3],
-        [25, "FUPG FB: Quads", 3],
-        [50, "FUPG FB: Straight Flush", 3],
-        [150, "FUPG FB: Royal Flush", 3],
-        [400, "FUPG FB: Five Aces", 3],
-        [1000, "FUPG FB: 7 Card SF with Joker", 3],
-        [2000, "FUPG FB: Royal Flush Royal Match", 3],
-        [5000, "FUPG FB: 7 Card SF no Joker", 3],
-        [7, "FUPG Ace High: no Joker", 3],
-        [10, "FUPG Ace High: with Joker", 3],
-        [25, "FUPG Ace High: Player too", 3],
-        [2, "FUPG LL: Ace High", 3],
-        [4, "FUPG LL: King High", 3],
-        [10, "FUPG LL: Queen High", 3],
-        [20, "FUPG LL: Jack High", 3],
-        [50, "FUPG LL: 10 High", 3],
-        [150, "FUPG LL: 9 High", 3],
+        [85, "$85", 2],
+        [90, "$90", 2],
+        [95, "$95", 2],
       ])
     },
     {
       id: uid(), name: "1 Card", inA: true, inB: false,
       items: mkItems([
-        [0.5, "1CD: Surrender", 3],
-        [4, "1CD: Any Tie", 3],
-        [10, "1CD: Black Tie", 3],
-        [25, "1CD: Aces Tie", 3],
-        [50, "1CD: Double Tie", 3],
-        [150, "1CD: Triple Tie", 3],
-        [200, "1CD: Quad Tie", 3],
+        [0.5, "1CD: Surrender", 2],
+        [4, "1CD: Any Tie", 2],
+        [10, "1CD: Black Tie", 2],
+        [25, "1CD: Aces Tie", 2],
+        [50, "1CD: Double Tie", 2],
+        [150, "1CD: Triple Tie", 2],
+        [200, "1CD: Quad Tie", 2],
+      ])
+    },
+    {
+      id: uid(), name: "3 Card Poker", inA: true, inB: false,
+      items: mkItems([
+        [0, "3CP Ante: Flush", 2],
+        [1, "3CP Ante: Straight", 2],
+        [4, "3CP Ante: Trips", 2],
+        [5, "3CP Ante: Straight Flush", 2],
+        [10, "3CP Ante: Mini Royal", 2],
+        [1, "3CP Pairs+: Pair", 2],
+        [3, "3CP Pairs+: Flush", 2],
+        [6, "3CP Pairs+: Straight", 2],
+        [30, "3CP Pairs+: Trips", 2],
+        [40, "3CP Pairs+: Straight Flush", 2],
+        [200, "3CP Pairs+: Mini Royal", 2],
+        [5, "3CP 6Card: Trips", 2],
+        [10, "3CP 6Card: Straight", 2],
+        [20, "3CP 6Card: Flush", 2],
+        [25, "3CP 6Card: Full House", 2],
+        [50, "3CP 6Card: Quads", 2],
+        [200, "3CP 6Card: Straight Flush", 2],
+        [1000, "3CP 6Card: Royal Flush", 2],
+        [5, "3CP 2WBB: Pair", 2],
+        [50, "3CP 2WBB: Flush", 2],
+        [100, "3CP 2WBB: Straight", 2],
+        [3000, "3CP 2WBB: Trips", 2],
+        [10000, "3CP 2WBB: Straight Flush", 2],
+      ])
+    },
+    {
+      id: uid(), name: "I ❤ Suits", inA: true, inB: false,
+      items: mkItems([
+        [1, "ILS Flush Rush: 4 Card", 2],
+        [10, "ILS Flush Rush: 5 Card", 2],
+        [100, "ILS Flush Rush: 6 Card", 2],
+        [300, "ILS Flush Rush: 7 Card", 2],
+        [7, "ILS Super Flush Rush: 3 Card", 2],
+        [60, "ILS Super Flush Rush: 4 Card", 2],
+        [100, "ILS Super Flush Rush: 5 Card", 2],
+        [1000, "ILS Super Flush Rush: 6 Card", 2],
+      ])
+    },
+    {
+      id: uid(), name: "DJ Wild", inA: true, inB: false,
+      items: mkItems([
+        [1, "DJW Blind: Straight", 2],
+        [2, "DJW Blind: Flush", 2],
+        [3, "DJW Blind: Full House", 2],
+        [4, "DJW Blind: Quads", 2],
+        [9, "DJW Blind: Straight Flush", 2],
+        [10, "DJW Blind: Quints", 2],
+        [50, "DJW Blind: Royal Flush", 2],
+        [1000, "DJW Blind: Five Wilds", 2],
+        [1, "DJW Trips: Wild Trips", 2],
+        [3, "DJW Trips: Wild Straight", 2],
+        [4, "DJW Trips: Wild Flush", 2],
+        [5, "DJW Trips: Wild Full House", 2],
+        [6, "DJW Trips: Wild Quads", 2],
+        [25, "DJW Trips: Wild Straight Flush", 2],
+        [70, "DJW Trips: Quints", 2],
+        [90, "DJW Trips: Wild Royal Flush", 2],
+        [2000, "DJW Trips: Five Wilds", 2],
+        [6, "DJW Trips: Natural Trips", 2],
+        [20, "DJW Trips: Natural Straight", 2],
+        [25, "DJW Trips: Natural Flush", 2],
+        [30, "DJW Trips: Natural Full House", 2],
+        [60, "DJW Trips: Natural Quads", 2],
+        [200, "DJW Trips: Natural Straight Flush", 2],
+        [1000, "DJW Trips: Natural Royal Flush", 2],
+        [9, "DJW 2WBB: Trips", 2],
+        [100, "DJW 2WBB: Straight", 2],
+        [300, "DJW 2WBB: Flush", 2],
+        [400, "DJW 2WBB: Full House", 2],
+        [500, "DJW 2WBB: Quads", 2],
+        [5000, "DJW 2WBB: Straight Flush", 2],
+        [10000, "DJW 2WBB: Quints", 2],
+        [10000, "DJW 2WBB: Royal Flush", 2],
+      ])
+    },
+    {
+      id: uid(), name: "Pai Gow", inA: true, inB: false,
+      items: mkItems([
+        [2, "FUPG FB: Straight", 2],
+        [3, "FUPG FB: Trips", 2],
+        [4, "FUPG FB: Flush", 2],
+        [5, "FUPG FB: Full House", 2],
+        [25, "FUPG FB: Quads", 2],
+        [50, "FUPG FB: Straight Flush", 2],
+        [150, "FUPG FB: Royal Flush", 2],
+        [400, "FUPG FB: Five Aces", 2],
+        [1000, "FUPG FB: 7 Card SF with Joker", 2],
+        [2000, "FUPG FB: Royal Flush Royal Match", 2],
+        [5000, "FUPG FB: 7 Card SF no Joker", 2],
+        [7, "FUPG Ace High: no Joker", 2],
+        [10, "FUPG Ace High: with Joker", 2],
+        [25, "FUPG Ace High: Player too", 2],
+        [2, "FUPG LL: Ace High", 2],
+        [4, "FUPG LL: King High", 2],
+        [10, "FUPG LL: Queen High", 2],
+        [20, "FUPG LL: Jack High", 2],
+        [50, "FUPG LL: 10 High", 2],
+        [150, "FUPG LL: 9 High", 2],
+      ])
+    },
+    {
+      id: uid(), name: "Mississippi Stud", inA: true, inB: false,
+      items: mkItems([
+        [1, "MS 3Card: Pair", 2],
+        [3, "MS 3CB: Flush", 2],
+        [6, "MS 3Card Straight", 2],
+        [30, "MS 3Card: Trips", 2],
+        [40, "MS 3Card: Straight Flush", 2],
+        [50, "MS 3Card: Mini Royal", 2],
+        [3, "MS Pocket: 2s - 10s", 2],
+        [5, "MS Pocket: AJ AQ Unsuited", 2],
+        [10, "MS Pocket: JJ, QQ, KK", 2],
+        [15, "MS Pocket: AK Unsuited", 2],
+        [20, "MS Pocket: AJ AQ Suited", 2],
+        [25, "MS Pocket: AK Suited", 2],
+        [30, "MS Pocket: Aces", 2],
+        [0, "MS Streets: Pair 6s - 10s", 2],
+        [1, "MS Streets: Pair Js or Higher", 2],
+        [2, "MS Streets: Two Pair", 2],
+        [3, "MS Streets: Trips", 2],
+        [4, "MS Streets: Straight", 2],
+        [6, "MS Streets: Flush", 2],
+        [10, "MS Streets: Full House", 2],
+        [40, "MS Streets: Quads", 2],
+        [100, "MS Streets: Straight Flush", 2],
+        [500, "MS Streets: Royal Flush", 2],
       ])
     },
     {
       id: uid(), name: "New Ratios", inA: true, inB: false,
       items: mkItems([
-        [2, "FUPG LL: Ace High", 3],
-        [4, "FUPG LL: King High", 3],
-        [10, "FUPG LL: Queen High", 3],
-        [20, "FUPG LL: Jack High", 3],
-        [50, "FUPG LL: 10 High", 3],
-        [150, "FUPG LL: Nine High", 3],
-        [5, "3CP 2WBB: Pair", 3],
-        [50, "3CP 2WBB: Flush", 3],
-        [100, "3CP 2WBB: Straight", 3],
-        [3000, "3CP 2WBB: Trips", 3],
-        [10000, "3CP 2WBB: Straight Flush", 3],
-        [9, "UTH 2WBB: Trips", 3],
-        [20, "UTH 2WBB: Straight", 3],
-        [25, "UTH 2WBB: Flush", 3],
-        [40, "UTH 2WBB: Full House", 3],
-        [500, "UTH 2WBB: Quads", 3],
-        [10000, "UTH 2WBB: Straight Flush", 3],
-        [30, "UTH Blind: Straight Flush", 3],
-        [500, "UTH Blind: Royal Flush", 3],
-        [5, "3CP 6Card: Trips", 3],
-        [20, "3CP 6Card: Flush", 3],
-        [25, "3CP 6Card: Full House", 3],
-        [50, "3CP 6Card: Quads", 3],
+        [2, "FUPG LL: Ace High", 2],
+        [4, "FUPG LL: King High", 2],
+        [10, "FUPG LL: Queen High", 2],
+        [20, "FUPG LL: Jack High", 2],
+        [50, "FUPG LL: 10 High", 2],
+        [150, "FUPG LL: Nine High", 2],
+        [5, "3CP 2WBB: Pair", 2],
+        [50, "3CP 2WBB: Flush", 2],
+        [100, "3CP 2WBB: Straight", 2],
+        [3000, "3CP 2WBB: Trips", 2],
+        [10000, "3CP 2WBB: Straight Flush", 2],
+        [9, "UTH 2WBB: Trips", 2],
+        [20, "UTH 2WBB: Straight", 2],
+        [25, "UTH 2WBB: Flush", 2],
+        [40, "UTH 2WBB: Full House", 2],
+        [500, "UTH 2WBB: Quads", 2],
+        [10000, "UTH 2WBB: Straight Flush", 2],
+        [30, "UTH Blind: Straight Flush", 2],
+        [500, "UTH Blind: Royal Flush", 2],
+        [5, "3CP 6Card: Trips", 2],
+        [20, "3CP 6Card: Flush", 2],
+        [25, "3CP 6Card: Full House", 2],
+        [50, "3CP 6Card: Quads", 2],
       ])
     },
     {
@@ -372,50 +413,69 @@ function defaultCategories() {
       ])
     },
     {
-      id: uid(), name: "Mississippi Stud", inA: true, inB: false,
-      items: mkItems([
-        [1, "MS 3Card: Pair", 3],
-        [3, "MS 3CB: Flush", 3],
-        [6, "MS 3Card Straight", 3],
-        [30, "MS 3Card: Trips", 3],
-        [40, "MS 3Card: Straight Flush", 3],
-        [50, "MS 3Card: Mini Royal", 3],
-        [3, "MS Pocket: 2s - 10s", 3],
-        [5, "MS Pocket: AJ AQ Unsuited", 3],
-        [10, "MS Pocket: JJ, QQ, KK", 3],
-        [15, "MS Pocket: AK Unsuited", 3],
-        [20, "MS Pocket: AJ AQ Suited", 3],
-        [25, "MS Pocket: AK Suited", 3],
-        [30, "MS Pocket: Aces", 3],
-        [0, "MS Streets: Pair 6s - 10s", 3],
-        [1, "MS Streets: Pair Js or Higher", 3],
-        [2, "MS Streets: Two Pair", 3],
-        [3, "MS Streets: Trips", 3],
-        [4, "MS Streets: Straight", 3],
-        [6, "MS Streets: Flush", 3],
-        [10, "MS Streets: Full House", 3],
-        [40, "MS Streets: Quads", 3],
-        [100, "MS Streets: Straight Flush", 3],
-        [500, "MS Streets: Royal Flush", 3],
-      ])
-    },
-    {
       id: uid(), name: "Ratio Numbers", inA: true, inB: false,
       items: mkItems(
         [2,3,4,5,6,7,8,9,10,15,20,25,30,40,50,60,70,90,100,150,200,300,400,500,1000,2000,5000,8000,10000]
           .map(v => [v, String(v), 3])
       )
+    },
+    {
+      id: uid(), name: "Custom", inA: true, inB: false,
+      items: []
     }
   ];
 }
 
 const MAX_ANSWER = 100000;
-function buildPool(catA, catB) {
+
+// Adaptive frequency: for any value in a category with more than one item
+// (either set), starts at the item's stored weight (2 by default), bumps
+// +1 per miss, caps at 5. Persisted per browser. Single-value categories
+// (like a one-item Ratios category) are left static.
+const ADAPTIVE_KEY = "payout_adaptive_weights_v1";
+function loadAdaptive() {
+  try { const s = localStorage.getItem(ADAPTIVE_KEY); return s ? JSON.parse(s) : {}; } catch { return {}; }
+}
+function saveAdaptive(map) {
+  try { localStorage.setItem(ADAPTIVE_KEY, JSON.stringify(map)); } catch {}
+}
+function clearAdaptive() {
+  try { localStorage.removeItem(ADAPTIVE_KEY); } catch {}
+}
+function buildAdaptiveEligibility(categories) {
+  const eligible = new Set();
+  for (const cat of categories) if (cat.items.length > 1) for (const it of cat.items) eligible.add(it.id);
+  return eligible;
+}
+function getEffectiveWeight(item, adaptiveWeights, eligibleIds) {
+  if (!eligibleIds.has(item.id)) return item.weight;
+  const v = adaptiveWeights[item.id];
+  return v !== undefined ? v : item.weight;
+}
+
+const TIMED_COUNT_KEY = "payout_timed_count_v1";
+function loadTimedCount() {
+  try {
+    const s = localStorage.getItem(TIMED_COUNT_KEY);
+    const n = s ? parseInt(s, 10) : 60;
+    return (Number.isFinite(n) && n > 0) ? n : 60;
+  } catch { return 60; }
+}
+function saveTimedCount(n) {
+  try { localStorage.setItem(TIMED_COUNT_KEY, String(n)); } catch {}
+}
+function clearTimedCount() {
+  try { localStorage.removeItem(TIMED_COUNT_KEY); } catch {}
+}
+
+function buildPool(catA, catB, adaptiveWeights, eligibleIds) {
   const pool = [];
   for (const a of catA.items)
     for (const b of catB.items) {
       if (a.value * b.value > MAX_ANSWER) continue;
-      const w = Math.round((a.weight + b.weight) / 2);
+      const wA = getEffectiveWeight(a, adaptiveWeights, eligibleIds);
+      const wB = getEffectiveWeight(b, adaptiveWeights, eligibleIds);
+      const w = Math.round((wA + wB) / 2);
       for (let i = 0; i < w; i++) pool.push({ a, b });
     }
   return shuffle(pool);
@@ -464,10 +524,11 @@ function SetPills({ inA, inB, onToggleA, onToggleB }) {
   );
 }
 
-function CategoryEditor({ cat, onChange, onDelete }) {
+function CategoryEditor({ cat, onChange, onDelete, adaptiveWeights, onSetAdaptive }) {
   const [newVal, setNewVal] = useState("");
   const [newLabel, setNewLabel] = useState("");
   const valRef = useRef();
+  const isAdaptive = cat.items.length > 1;
 
   const updateName = name => onChange({ ...cat, name });
   const toggleInA = () => onChange({ ...cat, inA: !cat.inA });
@@ -480,9 +541,15 @@ function CategoryEditor({ cat, onChange, onDelete }) {
     const v = parseFloat(newVal);
     if (isNaN(v)) return;
     const label = newLabel.trim() || String(v);
-    onChange({ ...cat, items: [...cat.items, { id: uid(), value: v, label, weight: 3 }] });
+    onChange({ ...cat, items: [...cat.items, { id: uid(), value: v, label, weight: 2 }] });
     setNewVal(""); setNewLabel("");
     valRef.current?.focus();
+  };
+
+  const effectiveWeight = it => isAdaptive && adaptiveWeights[it.id] !== undefined ? adaptiveWeights[it.id] : it.weight;
+  const handleWeightChange = (it, w) => {
+    if (isAdaptive) onSetAdaptive(it.id, w);
+    else updateItem(it.id, { weight: w });
   };
 
   return (
@@ -492,6 +559,11 @@ function CategoryEditor({ cat, onChange, onDelete }) {
         <SetPills inA={cat.inA} inB={cat.inB} onToggleA={toggleInA} onToggleB={toggleInB} />
         <button className="btn btn-danger btn-sm" onClick={onDelete}>Delete</button>
       </div>
+      {isAdaptive && (
+        <p style={{fontSize:"0.74rem",color:"#5a5a7a",marginBottom:"0.75rem"}}>
+          Frequency auto-adjusts as values are missed during drills (capped at 5). You can still override it manually below.
+        </p>
+      )}
       <table className="items-table">
         <thead>
           <tr>
@@ -506,7 +578,7 @@ function CategoryEditor({ cat, onChange, onDelete }) {
             <tr key={it.id}>
               <td><input className="item-val-input" type="number" value={it.value} onChange={e => updateItem(it.id, { value: parseFloat(e.target.value) || 0 })} /></td>
               <td><input className="item-label-input" value={it.label} onChange={e => updateItem(it.id, { label: e.target.value })} placeholder="Label…" /></td>
-              <td><WeightDots value={it.weight} onChange={w => updateItem(it.id, { weight: w })} /></td>
+              <td><WeightDots value={effectiveWeight(it)} onChange={w => handleWeightChange(it, w)} /></td>
               <td><button className="btn btn-icon btn-ghost" onClick={() => removeItem(it.id)} style={{color:"#f08090"}}>✕</button></td>
             </tr>
           ))}
@@ -524,11 +596,11 @@ function CategoryEditor({ cat, onChange, onDelete }) {
 }
 
 function App() {
-  const [categories, setCategories] = useState(() => loadFromURL() || defaultCategories());
-  // Session-only: which Set-B categories are active for the drill right now.
-  // This never touches category.inB — it's purely a temporary include/exclude toggle.
-  const [activeB, setActiveB] = useState(() => new Set(categories.filter(c => c.inB).map(c => c.id)));
-  const seenBIdsRef = useRef(new Set(categories.filter(c => c.inB).map(c => c.id)));
+  const [categories, setCategories] = useState(() => loadFromURL() || loadCategoriesFromStorage() || defaultCategories());
+  // Session-only: which Set-A / Set-B categories are active for the drill right now.
+  // This never touches category.inA / category.inB — purely a temporary include/exclude toggle.
+  const [activeA, setActiveA] = useState(() => new Set());
+  const [activeB, setActiveB] = useState(() => new Set());
   const [mainTab, setMainTab] = useState("drill");
   const [activeCatId, setActiveCatId] = useState(null);
   const [mode, setMode] = useState("drill");
@@ -540,23 +612,51 @@ function App() {
   const [missed, setMissed] = useState([]);
   const [score, setScore] = useState(0);
   const [copied, setCopied] = useState(false);
-  const TIMED_QUESTIONS = 60;
+  const [confirmingReset, setConfirmingReset] = useState(false);
+  const [adaptiveWeights, setAdaptiveWeights] = useState(() => loadAdaptive());
+  const [timedCount, setTimedCount] = useState(() => loadTimedCount());
   const [timeElapsed, setTimeElapsed] = useState(0);
   const timerRef = useRef(null);
 
+  const bumpAdaptive = (itemId, baseWeight) => {
+    setAdaptiveWeights(prev => {
+      const cur = prev[itemId] !== undefined ? prev[itemId] : baseWeight;
+      const next = Math.min(5, cur + 1);
+      const updated = { ...prev, [itemId]: next };
+      saveAdaptive(updated);
+      return updated;
+    });
+  };
+
+  const setAdaptive = (itemId, weight) => {
+    setAdaptiveWeights(prev => {
+      const updated = { ...prev, [itemId]: weight };
+      saveAdaptive(updated);
+      return updated;
+    });
+  };
+
+  const resetToDefaults = () => {
+    clearAdaptive();
+    clearTimedCount();
+    clearCategoriesStorage();
+    setAdaptiveWeights({});
+    setTimedCount(60);
+    setCategories(defaultCategories());
+    setActiveA(new Set());
+    setActiveB(new Set());
+    setConfirmingReset(false);
+  };
+
   useEffect(() => {
+    saveCategoriesToStorage(categories);
     if (!activeCatId && categories.length > 0) setActiveCatId(categories[0].id);
     if (activeCatId && !categories.find(c => c.id === activeCatId))
       setActiveCatId(categories[0]?.id || null);
-    const idsInB = categories.filter(c => c.inB).map(c => c.id);
-    setActiveB(prev => {
-      const next = new Set();
-      for (const id of idsInB) {
-        if (prev.has(id) || !seenBIdsRef.current.has(id)) next.add(id); // keep active, or default new ones active
-      }
-      seenBIdsRef.current = new Set(idsInB);
-      return next;
-    });
+    const idsInA = new Set(categories.filter(c => c.inA).map(c => c.id));
+    setActiveA(prev => new Set([...prev].filter(id => idsInA.has(id))));
+    const idsInB = new Set(categories.filter(c => c.inB).map(c => c.id));
+    setActiveB(prev => new Set([...prev].filter(id => idsInB.has(id))));
   }, [categories]);
 
   const updateCat = updated => setCategories(cats => cats.map(c => c.id === updated.id ? updated : c));
@@ -567,16 +667,17 @@ function App() {
     setActiveCatId(newCat.id);
   };
 
-  const catA = mergeSelected(categories, "inA");
+  const catA = mergeCats(categories.filter(c => c.inA && activeA.has(c.id)));
   const catB = mergeCats(categories.filter(c => c.inB && activeB.has(c.id)));
   const canDrill = catA.items.length > 0 && catB.items.length > 0;
+  const eligibleIds = buildAdaptiveEligibility(categories);
   const poolSize = canDrill
     ? catA.items.reduce((s,a) => s + catB.items.reduce((t,b) =>
-        t + (a.value * b.value > MAX_ANSWER ? 0 : Math.round((a.weight+b.weight)/2)), 0), 0)
+        t + (a.value * b.value > MAX_ANSWER ? 0 : Math.round((getEffectiveWeight(a,adaptiveWeights,eligibleIds)+getEffectiveWeight(b,adaptiveWeights,eligibleIds))/2)), 0), 0)
     : 0;
 
   const startQuiz = () => {
-    let pool = buildPool(catA, catB);
+    let pool = buildPool(catA, catB, adaptiveWeights, eligibleIds);
     if (!pool.length) return;
     if (mode === "timed") {
       // Weighted shuffle first (biases order toward higher-weight pairs),
@@ -589,7 +690,8 @@ function App() {
         seen.add(key);
         unique.push(q);
       }
-      pool = unique.slice(0, TIMED_QUESTIONS);
+      const n = Number.isFinite(timedCount) && timedCount > 0 ? timedCount : 60;
+      pool = unique.slice(0, n);
     }
     setQuestions(pool); setQIndex(0); setAnswer(""); setFeedback(null); setMissed([]); setScore(0);
     if (mode === "timed") { setTimeElapsed(0); }
@@ -615,7 +717,11 @@ function App() {
     const given = parseFloat(answer);
     const isCorrect = given === correct;
     if (isCorrect) setScore(s => s + 1);
-    else setMissed(m => [...m, { q, given, correct }]);
+    else {
+      setMissed(m => [...m, { q, given, correct }]);
+      if (eligibleIds.has(q.a.id)) bumpAdaptive(q.a.id, q.a.weight);
+      if (eligibleIds.has(q.b.id)) bumpAdaptive(q.b.id, q.b.weight);
+    }
     if (screen === "timed") {
       const next = qIndex + 1;
       if (next >= questions.length) { clearInterval(timerRef.current); setScreen("results"); }
@@ -627,7 +733,7 @@ function App() {
         else { setQIndex(i => i + 1); setAnswer(""); setFeedback(null); }
       }, 900);
     }
-  }, [feedback, questions, qIndex, answer, screen]);
+  }, [feedback, questions, qIndex, answer, screen, adaptiveWeights, eligibleIds]);
 
   useEffect(() => {
     const handler = e => {
@@ -775,29 +881,35 @@ function App() {
               <div className="drill-col">
                 <div className="drill-col-title title-a">Set A</div>
                 {(() => {
-                  const eligibleA = categories.filter(c => !c.inB);
-                  const allOn = eligibleA.length > 0 && eligibleA.every(c => c.inA);
-                  return (
-                    <>
-                      <button className={`drill-cat-btn all-btn ${allOn?"sel-a":""}`}
-                        onClick={() => setCategories(cats => cats.map(c => c.inB ? c : {...c,inA:!allOn}))}>
-                        All
-                        <span style={{color:allOn?"#3a5a3a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>
-                          ({eligibleA.reduce((s,c)=>s+c.items.length,0)})
-                        </span>
-                      </button>
-                      {eligibleA.map(c => (
-                        <button key={c.id} className={`drill-cat-btn ${c.inA?"sel-a":""}`}
-                          onClick={() => setCategories(cats => cats.map(x => x.id===c.id?{...x,inA:!x.inA}:x))}>
-                          {c.name}
-                          <span style={{color:c.inA?"#3a5a3a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>({c.items.length})</span>
-                        </button>
-                      ))}
-                      {eligibleA.length === 0 && <div style={{fontSize:"0.78rem",color:"#3a3a5a",padding:"0.4rem 0"}}>All categories are in Set B</div>}
-                    </>
-                  );
+                  const assignedA = categories.filter(c => c.inA);
+                  const allOn = assignedA.length > 0 && assignedA.every(c => activeA.has(c.id));
+                  return assignedA.length > 0 ? (
+                    <button className={`drill-cat-btn all-btn ${allOn?"sel-a":""}`}
+                      onClick={() => setActiveA(prev => {
+                        const next = new Set(prev);
+                        for (const c of assignedA) { if (allOn) next.delete(c.id); else next.add(c.id); }
+                        return next;
+                      })}>
+                      All
+                      <span style={{color:allOn?"#3a5a3a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>
+                        ({assignedA.reduce((s,c)=>s+c.items.length,0)})
+                      </span>
+                    </button>
+                  ) : null;
                 })()}
-                {categories.filter(c=>c.inA).length>1 && <div className="drill-hint">Merged into one pool</div>}
+                {categories.filter(c=>c.inA).length===0 && <div style={{fontSize:"0.78rem",color:"#3a3a5a",padding:"0.4rem 0"}}>No categories assigned — go to Edit Categories</div>}
+                {categories.filter(c=>c.inA).map(c => (
+                  <button key={c.id} className={`drill-cat-btn ${activeA.has(c.id)?"sel-a":""}`}
+                    onClick={() => setActiveA(prev => {
+                      const next = new Set(prev);
+                      if (next.has(c.id)) next.delete(c.id); else next.add(c.id);
+                      return next;
+                    })}>
+                    {c.name}
+                    <span style={{color:activeA.has(c.id)?"#3a5a3a":"#3a3a5a",fontWeight:400,fontSize:"0.76rem",marginLeft:"0.4rem"}}>({c.items.length})</span>
+                  </button>
+                ))}
+                {categories.filter(c=>activeA.has(c.id)).length>1 && <div className="drill-hint">Merged into one pool</div>}
               </div>
               <div className="vs-divider">×</div>
               <div className="drill-col">
@@ -831,7 +943,21 @@ function App() {
 
           {mode === "timed" && (
             <div style={{fontSize:"0.8rem",color:"#7a5a3a",background:"#1a1208",border:"1px solid #3a2a10",borderRadius:"8px",padding:"0.6rem 0.9rem",marginBottom:"0.75rem"}}>
-              ⏱ <strong style={{color:"#f0a060"}}>60 questions</strong> — answer as fast as you can. No feedback between questions. Results show time, score, and every missed question.
+              ⏱ Answer as fast as you can. No feedback between questions. Results show time, score, and every missed question.
+              <div style={{display:"flex",alignItems:"center",gap:"0.5rem",marginTop:"0.6rem"}}>
+                <label style={{fontSize:"0.78rem",color:"#f0a060",fontWeight:600}}>Questions:</label>
+                <input
+                  type="number" min="1" max="500"
+                  value={timedCount}
+                  onChange={e => {
+                    const n = parseInt(e.target.value, 10);
+                    const val = Number.isFinite(n) && n > 0 ? n : 1;
+                    setTimedCount(val);
+                    saveTimedCount(val);
+                  }}
+                  style={{width:"70px",background:"#0d0d14",border:"1px solid #3a2a10",borderRadius:"6px",padding:"0.3rem 0.5rem",color:"#f0a060",fontFamily:"'Space Mono',monospace",fontSize:"0.85rem",textAlign:"center",outline:"none"}}
+                />
+              </div>
             </div>
           )}
           <button className="btn-start-quiz" disabled={!canDrill} onClick={startQuiz}>
@@ -842,6 +968,21 @@ function App() {
 
       {mainTab === "edit" && (
         <>
+          {!confirmingReset ? (
+            <button className="btn btn-ghost btn-sm" style={{marginBottom:"1rem",width:"100%"}}
+              onClick={() => setConfirmingReset(true)}>
+              Reset to Defaults
+            </button>
+          ) : (
+            <div style={{display:"flex",gap:"0.5rem",marginBottom:"1rem"}}>
+              <button className="btn btn-danger btn-sm" style={{flex:1}} onClick={resetToDefaults}>
+                Confirm Reset — Erases All Edits
+              </button>
+              <button className="btn btn-ghost btn-sm" style={{flex:1}} onClick={() => setConfirmingReset(false)}>
+                Cancel
+              </button>
+            </div>
+          )}
           <div className="cat-tabs">
             {categories.map(c => (
               <button key={c.id} className={`cat-tab ${activeCatId===c.id?"active":""} ${c.inA?"in-a":""} ${c.inB?"in-b":""}`}
@@ -854,7 +995,8 @@ function App() {
           </div>
           {activeCat ? (
             <div className="card">
-              <CategoryEditor key={activeCat.id} cat={activeCat} onChange={updateCat} onDelete={() => deleteCat(activeCat.id)} />
+              <CategoryEditor key={activeCat.id} cat={activeCat} onChange={updateCat} onDelete={() => deleteCat(activeCat.id)}
+                adaptiveWeights={adaptiveWeights} onSetAdaptive={setAdaptive} />
             </div>
           ) : (
             <div className="card" style={{textAlign:"center",color:"#5a5a7a",padding:"2.5rem"}}>
