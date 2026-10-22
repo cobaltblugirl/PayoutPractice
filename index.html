@@ -468,6 +468,14 @@ function clearTimedCount() {
   try { localStorage.removeItem(TIMED_COUNT_KEY); } catch {}
 }
 
+// Payouts round up to the nearest whole number — except ratio questions
+// (where one side is exactly 1), which must stay exact for accuracy.
+function computeAnswer(a, b) {
+  const raw = a * b;
+  if (a === 1 || b === 1) return raw;
+  return Math.ceil(raw);
+}
+
 function buildPool(catA, catB, adaptiveWeights, eligibleIds) {
   const pool = [];
   for (const a of catA.items)
@@ -713,7 +721,7 @@ function App() {
   const submitAnswer = useCallback(() => {
     if (feedback) return;
     const q = questions[qIndex];
-    const correct = Math.ceil(q.a.value * q.b.value);
+    const correct = computeAnswer(q.a.value, q.b.value);
     const given = parseFloat(answer);
     const isCorrect = given === correct;
     if (isCorrect) setScore(s => s + 1);
@@ -772,7 +780,7 @@ function App() {
           onChange={e => setAnswer(e.target.value)} autoFocus readOnly={!!feedback} />
         <div className={`feedback ${feedback||""}`}>
           {feedback === "correct" && "✓ Correct!"}
-          {feedback === "wrong" && `✗ Answer: ${Math.ceil(questions[qIndex].a.value * questions[qIndex].b.value)}`}
+          {feedback === "wrong" && `✗ Answer: ${computeAnswer(questions[qIndex].a.value, questions[qIndex].b.value)}`}
         </div>
         {!feedback && answer !== "" && <button className="btn btn-green btn-check" onClick={submitAnswer}>Check</button>}
       </div>
@@ -843,7 +851,7 @@ function App() {
                     <span style={{flexShrink:0}}>
                       <span className="missed-yours">{isNaN(given)?"—":given} </span>
                       <span style={{color:"#3a3a5a"}}>→ </span>
-                      <span className="missed-correct">{Math.ceil(correct)}</span>
+                      <span className="missed-correct">{correct}</span>
                     </span>
                   </div>
                 ))}
